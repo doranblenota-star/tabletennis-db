@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
           .from('players')
           .select(`
             id, name_ja, name_en, gender, nationality, world_ranking, category,
-            equipment_records!inner (
+            equipment_records (
               id, racket_id, rubber_fore_id, rubber_back_id,
               racket_raw, rubber_fore_raw, rubber_back_raw,
               rubber_fore_thickness, rubber_back_thickness,
