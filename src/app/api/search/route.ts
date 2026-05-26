@@ -9,6 +9,12 @@ export async function GET(request: NextRequest) {
   const gender = searchParams.get('gender') || 'all'
   const side = searchParams.get('side') || 'both'
 
+  // TODO: 一時的な env チェック — 確認後に削除
+  console.log('[search] env check:', {
+    SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  })
+
   if (!q || q.length < 1) {
     return NextResponse.json({ players: [], rackets: [], rubbers: [] })
   }
