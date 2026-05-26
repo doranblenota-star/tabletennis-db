@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 卓球選手用具データベース
 
-## Getting Started
+世界・日本のトップ卓球選手が使用するラケット・ラバーを検索できるデータベースサイト。
 
-First, run the development server:
+## 技術スタック
+
+| カテゴリ | 使用技術 |
+|--------|---------|
+| フレームワーク | Next.js 16 (App Router) |
+| データベース | Supabase (PostgreSQL) |
+| スタイリング | Tailwind CSS v4 |
+| デプロイ | Vercel |
+| データ収集 | GitHub Actions（週次スクレイピング） |
+
+## ローカル開発
+
+### 1. リポジトリをクローン
+
+```bash
+git clone <repo-url>
+cd tabletennis-db
+```
+
+### 2. 依存パッケージをインストール
+
+```bash
+npm install
+```
+
+### 3. 環境変数を設定
+
+```bash
+cp .env.local.example .env.local
+```
+
+`.env.local` を開いて Supabase の値を入力してください（後述）。
+
+### 4. 開発サーバーを起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) で確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 環境変数
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.local.example` を参考に `.env.local` を作成してください。
 
-## Learn More
+| 変数名 | 説明 | 公開区分 |
+|--------|------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase プロジェクト URL | 公開可 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名キー | 公開可 |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase サービスロールキー | **秘密** |
+| `NEXT_PUBLIC_SITE_URL` | デプロイ先 URL（サーバー側 API 呼び出し用） | 公開可 |
 
-To learn more about Next.js, take a look at the following resources:
+> **重要**: `SUPABASE_SERVICE_ROLE_KEY` は管理者権限のある秘密キーです。絶対にコードにハードコードしないでください。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Supabase セットアップ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. [supabase.com](https://supabase.com) で新規プロジェクトを作成
+2. SQL Editor を開き `supabase/migrations/001_initial_schema.sql` を実行
+3. Project Settings > API から以下を取得：
+   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **anon public** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **service_role secret** → `SUPABASE_SERVICE_ROLE_KEY`
 
-## Deploy on Vercel
+## デプロイ（Vercel）
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. このリポジトリを GitHub に push
+2. [vercel.com](https://vercel.com) で「Add New Project」→ リポジトリをインポート
+3. **Environment Variables** に以下を設定：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   | 変数名 | 値 |
+   |--------|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | Supabase の Project URL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase の anon key |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Supabase の service_role key |
+   | `NEXT_PUBLIC_SITE_URL` | デプロイ後に発行される URL（例: `https://your-app.vercel.app`）|
+
+4. 「Deploy」ボタンを押す
+5. 初回デプロイ完了後、発行された URL を `NEXT_PUBLIC_SITE_URL` に設定して再デプロイ
+
+## GitHub Actions（週次スクレイピング）
+
+毎週日曜 03:00 JST に自動でデータを収集します。  
+GitHub リポジトリの **Settings > Secrets and variables > Actions** で以下を登録してください：
+
+| シークレット名 | 設定する値 |
+|--------------|-----------|
+| `SUPABASE_URL` | Supabase の Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase の service_role key |
+
+## 主なコマンド
+
+```bash
+npm run dev          # 開発サーバー起動
+npm run build        # 本番ビルド確認
+npm run lint         # Lint チェック
+npm run scrape       # 手動でスクレイピング実行
+npm run check-db     # DB 整合性チェック
+```

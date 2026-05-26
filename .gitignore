@@ -36,6 +36,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Claude Code (AI assistant memory — not for version control)
+.claude/
+
+# Supabase CLI local state (contains project ref and org IDs)
+supabase/.temp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
