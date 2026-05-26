@@ -61,6 +61,9 @@ export async function GET(request: NextRequest) {
       : Promise.resolve({ data: [], error: null }),
   ])
 
+  // TODO: 一時的な Supabase エラーチェック — 確認後に削除
+  if (rubbersRes.error) console.error('[search] rubbers query error:', rubbersRes.error.message, rubbersRes.error.code)
+
   // ラケット・ラバーの使用選手を取得
   const racketIds = (racketsRes.data ?? []).map((r: { id: string }) => r.id)
   const rubberIds = (rubbersRes.data ?? []).map((r: { id: string }) => r.id)
@@ -105,6 +108,10 @@ export async function GET(request: NextRequest) {
           .limit(100)
       : Promise.resolve({ data: [], error: null }),
   ])
+
+  // TODO: 一時的な Supabase エラーチェック — 確認後に削除
+  if (rubberForeUsersRes.error) console.error('[search] rubberForeUsers query error:', rubberForeUsersRes.error.message, rubberForeUsersRes.error.code)
+  if (rubberBackUsersRes.error) console.error('[search] rubberBackUsers query error:', rubberBackUsersRes.error.message, rubberBackUsersRes.error.code)
 
   // ラケット結果を組み立て
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
